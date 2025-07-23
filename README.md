@@ -48,7 +48,7 @@ This positions the project as a **solution pattern exporter**, not just a Brazil
 
 - **Scale**: Monitors 6 lawyers, ~110 active cases
 - **Volume**: Processes 566 notifications (test period)
-- **Accuracy**: 95%+ in deadline extraction (measured through lawyer HITL validation)
+- **Accuracy**: 86.7% in comprehensive regression tests (v1.5)
 - **Efficiency**: Reduces manual checking from 30min/day to 3min/day
 - **Cost**: Only $0.45/lawyer/month (extremely positive ROI)
 - **Reliability**: 99.5% success rate in DJEN API queries
@@ -119,7 +119,7 @@ The prompt includes complex legal reasoning rules for:
 **Context:** Most answers come directly from the notification text.  
 **Decision:** Prioritize pure extraction validation over context augmentation.  
 **Validation:** 566-notification test proved high accuracy without RAG.  
-**Impact:** 23% cost reduction while maintaining 95%+ accuracy.
+**Impact:** 23% cost reduction while maintaining 86.7% accuracy in regression tests.
 
 ### ADR-002: GPT-3.5-turbo over GPT-4
 **Context:** 23% cost difference at scale.  
@@ -132,24 +132,7 @@ The prompt includes complex legal reasoning rules for:
 **Validation:** Achieved greater agility and lower friction for iteration.  
 **Impact:** Faster development cycles and easier maintenance.
 
-## 📝 Prompt Engineering Maturity
 
-This project treats prompts as first-class citizens, applying real software engineering practices to LLM development:
-
-- **Prompt versioning:** All prompts are tracked and versioned (`Prompt-v1.0.md` to `Prompt-v1.5.md`)
-- **Changelog:** Every prompt change is documented (`changelog.md`)
-- **Automated regression tests:** Each prompt version and use case is covered by regression tests (`tests/cases/`)
-- **Advanced evaluation system:** Professional-grade metrics and comparison tools
-
-Below: Example of prompt versioning and regression test structure in the repository.
-
-![Prompt versioning and changelog](prompt-versioning-changelog.png)
-
-![Regression tests structure](test-structure-organization.png)
-
-![Test results summary](test-results-summary.png)
-
-![Individual test results](individual-test-results.png)
 
 ## 🧪 Advanced Evaluation System & Metrics
 
@@ -211,6 +194,20 @@ The quantitative improvement between prompt versions demonstrates our commitment
 ![Evolution Metrics](evolution-metrics.jpeg)
 
 *From v1.0 to v1.5, we achieved a remarkable +36.7% increase in overall accuracy, with 11 new successful test cases in the final version.*
+
+### 📊 **Full Evaluation Dataset (Google Sheets)**
+
+View all test results across prompt versions with complete transparency:  
+👉 **[Evaluation Dashboard (Google Sheets)](https://docs.google.com/spreadsheets/d/1ufQ6PBikz7a3gCpQyarau7BfhK3y-cuHi4SB4qrWRsQ/edit?usp=sharing)**
+
+**Dataset includes:**
+- **30 fixed tests** across 4 categories (Deadline, Action, Category, Instance)
+- **Accuracy evolution** per version (v1.0 → v1.5)
+- **Performance metrics**: latency, token usage, cost analysis
+- **Confidence scores** and reliability indicators
+- **Complete transparency** of all evaluation data
+
+*This demonstrates engineering maturity, testing discipline, and full transparency in our prompt engineering process.*
 
 ### 🔬 **Deep Dive: Performance Analysis**
 
