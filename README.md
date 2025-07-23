@@ -53,6 +53,16 @@ This positions the project as a **solution pattern exporter**, not just a Brazil
 - **Cost**: Only $0.45/lawyer/month (extremely positive ROI)
 - **Reliability**: 99.5% success rate in DJEN API queries
 
+### 🎯 **Prompt Engineering Achievements**
+
+Our advanced evaluation system demonstrates significant improvements in LLM prompt performance:
+
+- **Accuracy Breakthrough**: Achieved 86.7% accuracy in comprehensive regression tests (v1.5)
+- **Evolution Tracking**: Systematic improvement from 50.0% (v1.0) to 86.7% (v1.5)
+- **Cost Efficiency**: Complete evaluation suite costs only ~$0.076 per version
+- **Professional Validation**: Real legal cases with lawyer validation
+- **New Capabilities**: 11 additional successful test cases in final version
+
 ## 🧠 AI Strategies
 
 ### 📄 Notification Extraction (Main Module)
@@ -129,6 +139,7 @@ This project treats prompts as first-class citizens, applying real software engi
 - **Prompt versioning:** All prompts are tracked and versioned (`Prompt-v1.0.md` to `Prompt-v1.5.md`)
 - **Changelog:** Every prompt change is documented (`changelog.md`)
 - **Automated regression tests:** Each prompt version and use case is covered by regression tests (`tests/cases/`)
+- **Advanced evaluation system:** Professional-grade metrics and comparison tools
 
 Below: Example of prompt versioning and regression test structure in the repository.
 
@@ -139,6 +150,109 @@ Below: Example of prompt versioning and regression test structure in the reposit
 ![Test results summary](test-results-summary.png)
 
 ![Individual test results](individual-test-results.png)
+
+## 🧪 Advanced Evaluation System & Metrics
+
+This project implements a **professional-grade evaluation system** that demonstrates the evolution of prompt engineering through systematic testing and measurement:
+
+### 📊 **Comprehensive Test Categories**
+- **Deadline Extraction Tests:** Validates accurate legal deadline calculation
+- **Recommended Action Tests:** Ensures correct action recommendations (COMPARECER, MANIFESTAR_SE, TOMAR_CIENCIA)
+- **Procedural Category Tests:** Validates legal category classification (CIVIL, CRIMINAL, LABOR, SMALL_CLAIMS)
+- **Instance Detection Tests:** Confirms first vs second instance classification
+
+### 📈 **Real Evolution Metrics (v1.0 → v1.5)**
+
+**🎯 Dramatic Accuracy Improvement:**
+- **v1.0:** 50.0% accuracy (15/30 tests passed)
+- **v1.5:** 86.7% accuracy (26/30 tests passed)
+- **Improvement:** +36.7% accuracy gain
+
+**📊 Performance Metrics:**
+- **Latency:** Stable ~4-5 seconds per test
+- **Cost:** ~$0.002-0.003 per test (extremely cost-effective)
+- **Confidence Score:** Consistent 8.0-8.1/10 average
+- **Token Usage:** 4,000-5,000 tokens per analysis
+
+### 🔬 **Advanced Evaluation Features**
+
+**1. Confidence Scoring System:**
+```json
+{
+  "confidence_score": 8,
+  "reasoning": "Clear deadline information in text"
+}
+```
+
+**2. Comparative Analysis:**
+- Side-by-side version comparison
+- Evolution tracking between versions
+- New success/failure identification
+- Performance regression detection
+
+**3. Automated CSV Export:**
+- Detailed results per test case
+- Version comparison summaries
+- Timestamped reports for analysis
+- Professional data export for stakeholders
+
+### 📋 **Version Comparison Report**
+
+Our evaluation system provides comprehensive insights into prompt performance evolution. The table below shows the systematic improvement across all key metrics:
+
+![Version Comparison Report](version-comparison-report.jpeg)
+
+*This comparative report highlights the systematic progress in our prompt engineering efforts, with v1.5 achieving a breakthrough 86.7% accuracy.*
+
+### 📈 **Evolution Metrics**
+
+The quantitative improvement between prompt versions demonstrates our commitment to continuous enhancement:
+
+![Evolution Metrics](evolution-metrics.jpeg)
+
+*From v1.0 to v1.5, we achieved a remarkable +36.7% increase in overall accuracy, with 11 new successful test cases in the final version.*
+
+### 🔬 **Deep Dive: Performance Analysis**
+
+**Initial State (v1.4):**
+![v1.4 Detailed Metrics](v1.4-detailed-metrics.jpeg)
+
+*Detailed breakdown showing areas needing optimization, particularly in "Recommended Action Tests" with 0% accuracy.*
+
+**Optimized State (v1.5):**
+![v1.5 Detailed Metrics](v1.5-detailed-metrics.jpeg)
+
+*Significant improvements across all categories, with "Recommended Action Tests" now achieving 78.6% accuracy.*
+
+### 🎯 **Key Insights from Evaluation**
+
+**1. Breakthrough in v1.5:**
+- **Recommended Actions:** 0% → 78.6% accuracy
+- **Overall Accuracy:** 50.0% → 86.7%
+- **New Successes:** 11 additional tests passed
+- **Stable Performance:** Other categories maintained 100% accuracy
+
+**2. Cost-Effectiveness:**
+- **Total Test Cost:** ~$0.076 for complete evaluation
+- **Per-Test Cost:** ~$0.0025 average
+- **ROI:** Extremely positive for prompt optimization
+
+**3. Professional Validation:**
+- **Real Legal Cases:** All tests based on actual court notifications
+- **Lawyer Validation:** Results validated by practicing attorneys
+- **Production Ready:** System deployed in live environment
+
+This evaluation system demonstrates **enterprise-grade prompt engineering practices**, providing:
+- **Quantifiable improvement metrics**
+- **Professional reporting capabilities**
+- **Cost-effective optimization cycles**
+- **Real-world validation framework**
+
+The system serves as a **reference implementation** for LLM evaluation in regulated industries, showing how to:
+- Track prompt evolution systematically
+- Measure real-world performance
+- Validate improvements objectively
+- Maintain professional standards
 
 ## 💬 WhatsApp Conversational Agent & Interactions
 
@@ -172,6 +286,22 @@ The system supports natural language queries via WhatsApp, demonstrating the beg
 ## 🔁 Human-in-the-Loop (HITL) & Error Mitigation Strategies
 
 The system was designed with practical *Human-in-the-Loop* mechanisms to ensure quality, especially in the first iteration cycles with the language model. Here's our complete HITL process:
+
+### 🧪 **Advanced Evaluation System**
+
+Our professional-grade evaluation system provides comprehensive metrics and comparison tools:
+
+- **Automated Regression Testing**: CLI tool for running tests across all prompt versions
+- **Performance Metrics**: Latency, cost, confidence score, and accuracy tracking
+- **Version Comparison**: Side-by-side analysis of prompt performance evolution
+- **CSV Export**: Professional data export for stakeholder analysis
+- **Real-time Validation**: Immediate feedback on prompt improvements
+
+**Key Commands:**
+```bash
+npm run test                    # Quick tests (deadlines only)
+npm run test:full-regression   # Complete evaluation suite
+```
 
 ![Human-in-the-Loop Process](human-in-the-loop-process.png)
 
