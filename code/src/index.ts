@@ -1,39 +1,32 @@
+/**
+ * Main Entry Point - Court Notification Automation System
+ * 
+ * DEMO MODE (MOCK_MODE=true):
+ * Processes sample court notifications from fixtures, demonstrates
+ * LLM-powered extraction, deadline calculation with business days,
+ * and saves structured results to output/processed_notifications.json
+ * 
+ * PRODUCTION MODE (MOCK_MODE=false):
+ * Fetches real data from DJEN API, processes with the same pipeline,
+ * and persists to PostgreSQL. Runs on AWS Lambda every 20 minutes.
+ */
+
 import 'dotenv/config';
 import { IntimacaoService } from './services/orchestrators/IntimationOrchestratorService';
-import { GoogleSheetsService } from './services/integration/google/SheetsService';
+import { Logger } from './utils/logger';
 
 async function main() {
     try {
-        console.log('[INFO] Iniciando processamento...');
         const intimacaoService = new IntimacaoService();
-        const googleSheetsService = await GoogleSheetsService.getInstance();
-
-        const intimacoes = await intimacaoService.processarTodasIntimacoes();
-        await googleSheetsService.saveIntimacoes(intimacoes);
+        const result = await intimacaoService.processAllNotifications();
         
-        console.log('Processo finalizado com sucesso!');
+        Logger.complete(result.metrics.totalNotifications, result.metrics.validationRate);
     } catch (error) {
-        console.error('Erro durante a execução:', error);
+        Logger.blank();
+        Logger.error('Execution failed', error);
+        Logger.blank();
         process.exit(1);
     }
 }
 
-// Executa main() quando rodando localmente
-if (process.env.NODE_ENV !== 'production') {
-    main();
-}
-
-// Handler para AWS Lambda
-export const handler = async (event: any, context: any) => {
-    try {
-        console.log('[INFO] Lambda iniciada - Timestamp:', new Date().toISOString());
-        await main();
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ message: 'Execução concluída com sucesso' })
-        };
-    } catch (error) {
-        console.error('[ERROR] Falha na execução:', error);
-        throw error;
-    }
-};
+main();

@@ -1,13 +1,30 @@
-import { environment } from "../config/environment";
+/**
+ * Date Utilities - Business day calculations for legal deadlines
+ * 
+ * This module handles all date operations considering:
+ * - Brazilian timezone (America/Sao_Paulo / GMT-3)
+ * - Business days (Monday-Friday only)
+ * - Court-specific holidays
+ * - Legal deadline calculation rules
+ */
 
-// Função central para obter a data de busca
+/**
+ * Get the search date for DJEN API queries
+ * 
+ * Returns the current date in ISO format (YYYY-MM-DD).
+ * In production, this is used to query notifications published today.
+ * 
+ * @returns Date string in YYYY-MM-DD format
+ */
 export function getSearchDate(): string {
-  if (environment.USE_STATIC_DATE) {
-    return environment.STATIC_DATE;
-  }
   return new Date().toISOString().split("T")[0];
 }
 
+/**
+ * Get current date formatted for Brazilian locale
+ * 
+ * @returns Date string in DD/MM/YYYY format
+ */
 export function getCurrentDate(): string {
   const searchDate = new Date(getSearchDate());
   return searchDate.toLocaleDateString("pt-BR", {
@@ -18,12 +35,28 @@ export function getCurrentDate(): string {
   });
 }
 
+/**
+ * Add business days to a start date, excluding weekends and holidays
+ * 
+ * This is the core algorithm for legal deadline calculation.
+ * Only counts working days (Monday-Friday, excluding holidays).
+ * 
+ * @param startDate - Starting date
+ * @param daysToAdd - Number of business days to add
+ * @param feriados - Array of holiday dates (ISO format)
+ * @returns Final date in DD/MM/YY format
+ * 
+ * @example
+ * // Publication: 2025-06-02, Deadline: 8 business days
+ * addBusinessDays(new Date('2025-06-02'), 8, holidays)
+ * // Returns: "12/06/25" (skipping weekends and holidays)
+ */
 export function addBusinessDays(
   startDate: Date,
   daysToAdd: number,
   feriados: string[]
 ): string {
-  // Garantir que a data está no timezone correto
+  // Ensure date is in correct timezone (Brazil GMT-3)
   let currentDate = new Date(
     startDate.toISOString().split("T")[0] + "T00:00:00-03:00"
   );
@@ -32,13 +65,14 @@ export function addBusinessDays(
 
   while (addedDays < daysToAdd) {
     const dayOfWeek = currentDate.getDay();
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6; // 0 = Sunday, 6 = Saturday
     const currentDateStr = currentDate.toISOString().split("T")[0];
     const isHoliday = feriados.some(
       (feriado) => feriado.split("T")[0] === currentDateStr
     );
+    
+    // Only count if it's a business day (not weekend, not holiday)
     if (!isWeekend && !isHoliday) {
-      // 0 = Domingo, 6 = Sábado
       addedDays++;
     }
 
@@ -50,6 +84,12 @@ export function addBusinessDays(
   return formatDateToBR(currentDate);
 }
 
+/**
+ * Format date to Brazilian locale (DD/MM/YY)
+ * 
+ * @param date - Date object to format
+ * @returns Formatted date string
+ */
 export function formatDateToBR(date: Date): string {
   return date.toLocaleDateString("pt-BR", {
     timeZone: "America/Sao_Paulo",
@@ -59,7 +99,12 @@ export function formatDateToBR(date: Date): string {
   });
 }
 
-// Nova função para formatar a data para a API
+/**
+ * Format date for DJEN API (YYYY-MM-DD)
+ * 
+ * @param date - Date object to format
+ * @returns ISO date string (YYYY-MM-DD)
+ */
 export function formatDateForAPI(date: Date): string {
-  return date.toISOString().split("T")[0]; // Retorna YYYY-MM-DD
+  return date.toISOString().split("T")[0];
 }

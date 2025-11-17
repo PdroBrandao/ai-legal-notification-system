@@ -1,33 +1,44 @@
+/**
+ * Environment configuration module
+ * 
+ * Centralizes all environment variables and application constants.
+ * Configuration is loaded from .env file at runtime.
+ */
+
 declare const process: {
   env: {
+    MOCK_MODE?: string;
     API_KEY?: string;
-    GOOGLE_CREDENTIALS?: string;
     NODE_ENV?: string;
-    MEGA_API_URL?: string;
-    MEGA_API_KEY?: string;
-    MEGA_API_TOKEN?: string;
-    ENABLE_WHATSAPP?: string;
   };
 };
 
+/**
+ * Application environment configuration
+ * 
+ * @property MOCK_MODE - Enable mock mode for offline demo (loads fixtures instead of calling DJEN API)
+ * @property API_URL - Brazilian court notification system API endpoint (PJe Comunicação)
+ * @property API_MODEL_URL - OpenAI GPT API endpoint for LLM text extraction
+ * @property API_KEY - OpenAI API key for authentication
+ * @property DEFAULT_DEADLINES - Default deadline values by court (demo values for portfolio)
+ */
 export const environment = {
+  MOCK_MODE: process.env.MOCK_MODE === 'true',
   API_URL: "https://comunicaapi.pje.jus.br/api/v1/comunicacao",
   API_MODEL_URL: "https://api.openai.com/v1/chat/completions",
   API_KEY: process.env.API_KEY || "",
-  GOOGLE_CREDENTIALS: process.env.GOOGLE_CREDENTIALS || "",
-  SPREADSHEET_ID: "1CnLhImZkeugQRIVDv89fU1lE7l1HltRAx5U95ZglHew",
   DEFAULT_DEADLINES: {
-    TJMG: 15,
-    TRT3: 5,
-    TRF6: 15,
+    TJMG: 15,  // Minas Gerais State Court
+    TRT3: 5,   // Labor Court - 3rd Region
+    TRF6: 15,  // Federal Court - 6th Region
   } as const,
-  USE_STATIC_DATE: process.env.NODE_ENV !== 'production',
-  STATIC_DATE: "2025-07-10",
-  MEGA_API_URL: process.env.MEGA_API_URL || "",
-  MEGA_API_KEY: process.env.MEGA_API_KEY || "",
-  MEGA_API_TOKEN: process.env.MEGA_API_TOKEN || "",
-  DISABLE_WHATSAPP: process.env.NODE_ENV !== 'production' && process.env.ENABLE_WHATSAPP !== 'true',
 } as const;
 
-// Tipo para os tribunais suportados
+/**
+ * Supported Brazilian courts
+ * 
+ * TJMG - Tribunal de Justiça de Minas Gerais (State Court)
+ * TRT3 - Tribunal Regional do Trabalho da 3ª Região (Labor Court)
+ * TRF6 - Tribunal Regional Federal da 6ª Região (Federal Court)
+ */
 export type Tribunal = keyof typeof environment.DEFAULT_DEADLINES;

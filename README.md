@@ -1,11 +1,21 @@
-# Intimação Pro: Production LLM System Evolution (v0 → v1)
+<p align="center">
+  <img src="assets/architecture/logo.png" alt="Intimação Pro" width="600"/>
+</p>
 
-**From monolith to modular: the architecture, metrics, and engineering decisions behind a legal automation system processing 3,000+ court notifications in production**
+<h1 align="center">Production LLM System Evolution (v0 → v1)</h1>
 
-![Static Badge](https://img.shields.io/badge/Success_Rate-99.22%25-brightgreen)
-![Static Badge](https://img.shields.io/badge/Cost-$0.11%2Flawyer%2Fmonth-blue)
-![Static Badge](https://img.shields.io/badge/Time_Saved-900h-orange)
-![Static Badge](https://img.shields.io/badge/Production-5_months-purple)
+<p align="center">
+  <strong>From monolith to modular: the architecture, metrics, and engineering decisions behind a legal automation system processing 3,000+ court notifications in production</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Success_Rate-99.22%25-brightgreen" alt="Success Rate"/>
+  <img src="https://img.shields.io/badge/Cost-$0.11%2Flawyer%2Fmonth-blue" alt="Cost"/>
+  <img src="https://img.shields.io/badge/Time_Saved-900h-orange" alt="Time Saved"/>
+  <img src="https://img.shields.io/badge/Production-5_months-purple" alt="Production"/>
+</p>
+
+> **⚠️ Portfolio Version**: This repository demonstrates a simplified, safe-to-share version of the real production system — without proprietary logic, sensitive rules, or private data.
 
 > **🔒 Commercial Project Notice**: This repository documents a real production system. Architecture, metrics, and engineering patterns are shared. Proprietary elements (prompts, business logic, client data) remain protected.
 
@@ -18,6 +28,31 @@
 **The Solution:** An AI-powered system that monitors court notifications every 20 minutes, extracts structured information via LLM, calculates legal deadlines, and delivers instant WhatsApp notifications.
 
 **The Impact:** Running in production since June 2025, serving 14 lawyers across 110+ active cases.
+
+---
+
+## 🚀 Running the Code (Demo Mode)
+
+The codebase in `/code` is configured for **offline demonstration** without requiring external dependencies:
+
+✅ **Mock Mode Enabled** - Uses sample notifications from fixtures  
+✅ **No Database Required** - Results saved to JSON files  
+✅ **Anonymized Data** - All lawyer and case information is fictional  
+✅ **Real LLM Integration** - Actual GPT-3.5-turbo calls with metrics tracking  
+
+**Quick Start:**
+```bash
+cd code/
+npm install
+# Add your OpenAI API key to .env
+npm start
+```
+
+See [`/code/README.md`](code/README.md) for detailed setup instructions and architecture walkthrough.
+
+> **Note:** This demo uses simplified prompts and approximate deadline values to protect proprietary business logic. The production system processes real court notifications with 16+ extracted fields and precise legal deadline rules.
+
+---
 
 ## 📊 Production Impact (June - November 2025)
 

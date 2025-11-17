@@ -1,306 +1,58 @@
-export const SYSTEM_MESSAGE = `Você é um assistente especializado em análise de intimações judiciais. Sua função é extrair informações estruturadas do texto fornecido, seguindo estritamente o formato JSON solicitado. Mantenha-se objetivo e preciso, sem adicionar interpretações além do que está explicitamente no texto.`;
+/**
+ * EXAMPLE PROMPT - Simplified version for demonstration purposes
+ * 
+ * This is a generic prompt structure used to extract structured information
+ * from Brazilian court notifications (intimações). The actual production prompt
+ * contains proprietary business logic and legal rules.
+ * 
+ * For testing purposes, this simplified version extracts basic fields only.
+ */
 
+export const SYSTEM_MESSAGE = `You are a specialized assistant for analyzing Brazilian court notifications (intimações judiciais). 
+Your task is to extract structured information from the provided text and return it in strict JSON format. 
+Be objective and precise, extracting only information explicitly present in the text.`;
 
+export const USER_MESSAGE = `Extract the following basic information from the court notification:
 
-export const TEXTO_INTIMACAO = `PODER JUDICIÁRIO  JUSTIÇA DO TRABALHO  TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO  3ª VARA DO TRABALHO DE MONTES CLAROS   0010853-75.2024.5.03.0145  : MICHAEL JACKSON DOS SANTOS TEIXEIRA  : CEMA CENTRAL MINEIRA ATACADISTA LTDA  INTIMAÇÃO  Fica V. Sa. intimado para tomar ciência do Despacho ID 77352d4 proferido nos autos.  CONCLUSÃO Nesta data, faço CONCLUSOS os autos ao MM. Juiz do Trabalho.  Érika Cristiane Nogueira Souto  Técnico Judiciário     DESPACHO Vistos, etc.  Intime-se a parte exequente para, querendo, impugnar os cálculos de liquidação apresentados pela parte executada, no prazo de oito dias, com a indicação dos itens e valores objeto da divergência, sob pena de preclusão, nos termos do §2o, do art. 879 da CLT.   Desde já, inclua-se o feito na pauta de audiências para tentativa de conciliação, conforme solicitado pela parte reclamada na manifestação de ID. 2fe241e.   Diante da Portaria n. 79 de 22/05/2020, Resolução n. 314 do CNJ e do Ato Conjunto CSJT.GP. VP e CGJT. No 006, de 04 de maio de 2020, possibilitando a realização de audiências por videoconferência na Justiça do Trabalho, designo audiência virtual para tentativa de conciliação no dia 16/06/2025 10:15 horas. Para participar da audiência virtual é recomendado o uso de um notebook ou computador que tenha webcam, de preferência com acesso a Wifi de qualidade e fone de ouvido que possua microfone para evitar ruídos externos. Não havendo, pode-se utilizar outro dispositivo móvel (smartphone, tablet etc) com acesso à internet.  Na data e horário da audiência, as partes e seus procuradores deverão acessar o seguinte link:  https://trt3-jus-br.zoom.us/wc/join/89297349065 e inserir a senha 0145.  Faculta-se ainda o acesso através do aplicativo Zoom Meeting, informando o código/número da reunião 89297349065 e a senha 0145.  Registra-se que o acesso aos autos digitais é de inteira responsabilidade dos procuradores, seja através do download do PDF do processo, antes do início da audiência, seja através do acesso simultâneo ao Sistema PJe, de forma a possibilitar o regular desenvolvimento da sessão.  Eventual dificuldade técnica para participação na audiência deverá ser comunicada à Secretária da 3a Vara do Trabalho de Montes Claros, por meio dos telefones  (38) 3224-7430 ou (38) 3224-7432, ou, ainda, através do e-mail vt3.montesclaros@trt3.jus.br.  Conclamo as partes a iniciarem entre si as tentativas de acordo, através da participação ativa dos respectivos advogados, antes da realização da audiência virtual, visando o melhor aproveitamento e agilidade da sessão.  Intimem-se as partes.   Cumpra-se.  MONTES CLAROS/MG, 02 de junho de 2025.  SERGIO SILVEIRA MOURAO  Juiz do Trabalho Substituto<br><br>Intimado(s) / Citado(s)<br> - CEMA CENTRAL MINEIRA ATACADISTA LTDA<br>`; 
+1. Type of legal act (DESPACHO, SENTENÇA, DECISÃO)
+2. Deadline in days (if mentioned)
+3. Brief summary (max 150 chars)
+4. Defendant name (if mentioned)
 
-
-
-export const USER_MESSAGE = `A partir do conteúdo da intimação fornecido em 'TEXTO-INTIMACAO', extraia:
-
-1. Tipo de ato processual (DESPACHO, SENTENÇA ou DECISÃO)
-2. Tipo de manifestação requerida (MANIFESTAÇÃO, SENTENÇA, DESPACHO, DECISÃO, AUDIÊNCIA, PERICIA, SENTENÇA_AOS_EMBARGOS, EMBARGOS DE DECLARAÇÃO, APRESENTAÇÃO DE QUESITOS, CONTESTAÇÃO, IMPUGNAÇÃO, CONTRARAZÕES, INOMINADO, RECURSO ORDINÁRIO, APELAÇÃO, AGRAVO DE INSTRUMENTO)
-3. Prazo para manifestação (em dias, int)
-4. Base legal do prazo (artigo de lei que fundamenta o prazo)
-5. Resumo claro e objetivo da intimação (máximo 200 caracteres)
-6. Parte ré/reclamada (Réu)
-7. Nome completo do advogado ou escritório de advocacia destinatário, caso apareça
-8. Consequências práticas da decisão
-9. Ações sugeridas para o advogado
-10. Status do sistema (exemplo: "Prazo prescricional em curso")
-11. Qual o tipo de comparecimento ("AUDIENCIA" | "PERICIA" | "PAUTA_DE_JULGAMENTO" | null )
-12. Data do comparecimento (formato YYYY-MM-DD ou null)
-13. Horário do comparecimento (formato HH:MM ou null)
-14. Instância (PRIMEIRA ou SEGUNDA)
-15. Categoria processual (CIVIL, JUIZADO, CRIMINAL, TRABALHO)
-16. Ação recomendada (TOMAR_CIENCIA, MANIFESTAR_SE, COMPARECER)
-
-
-Retorne APENAS o seguinte JSON:
+Return ONLY this JSON structure:
 {
-  "tipo_ato": "TIPO_DO_ATO",
-  "tipo_manifestacao": "TIPO_DE_MANIFESTACAO_REQUERIDA",
-  "prazo": NUMERO_DE_DIAS,
-  "base_legal_prazo": "ARTIGO_DE_LEI",
-  "resumo": "RESUMO_CONCISO_DA_INTIMACAO",
-  "reu": "REU_DA_INTIMACAO",
-  "advogado_destinatario": "NOME_DO_ADVOGADO_OU_ESCRITORIO",
-  "consequencias_praticas": "DESCRIÇÃO_DAS_CONSEQUÊNCIAS",
-  "acoes_sugeridas": ["AÇÃO_1", "AÇÃO_2"],
-  "status_sistema": "STATUS_ATUAL",
-  "tipo_comparecimento": "AUDIENCIA" | "PERICIA" | "PAUTA_DE_JULGAMENTO" | null,
-  "data_comparecimento": "YYYY-MM-DD" | null,
-  "horario_comparecimento": "HH:MM" | null,
-  "instancia": "PRIMEIRA/SEGUNDA",
-  "categoria_processual": "CIVIL/JUIZADO/CRIMINAL/TRABALHO",
-  "acao_recomendada": "TOMAR_CIENCIA" | "MANIFESTAR_SE" | "COMPARECER"
+  "tipo_ato": "DESPACHO|SENTENÇA|DECISÃO",
+  "prazo": 15,
+  "resumo": "Brief notification summary",
+  "reu": "Defendant name or null"
 }
 
-Regras importantes:
-1. Para prazo:
-   - Se houver prazo explícito para manifestação/resposta da parte autora, priorize este prazo, mesmo que outro prazo também seja mencionado para a parte ré.
-   - Se ambos os prazos forem mencionados, escolha o prazo da parte autora, a menos que seja explicitamente especificado que o prazo da parte ré é para outra manifestação.
-   - Se houver prazo explícito para manifestação/resposta → use esse prazo em (int)
-   - Se o prazo mencionado for para outros fins (cadastro, habilitação, etc) → retorne null
-   - Se não houver prazo → retorne null
+TEXTO_INTIMACAO:
+[TEXTO_INTIMACAO]`;
 
-   Exemplos de prazos para manifestação:
-   - "prazo de X dias para manifestar"
-   - "prazo de X dias para contestar"
-   - "prazo de X dias para recorrer"
-   - "prazo de X dias para impugnar"
-   - "prazo de X dias para responder"
+/**
+ * Example notification text for testing (real case from public DJEN portal)
+ */
+export const TEXTO_INTIMACAO = `PODER JUDICIÁRIO
+JUSTIÇA DO TRABALHO
+TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO
+3ª VARA DO TRABALHO DE MONTES CLAROS
 
-   Exemplos de prazos que NÃO são para manifestação:
-   - "prazo para cadastro"
-   - "prazo para habilitação"
-   - "prazo para credenciamento"
-   - "prazo para inscrição"
+INTIMAÇÃO
+Fica V. Sa. intimado para tomar ciência do Despacho proferido nos autos.
 
-2. Para identificar os tipos de manifestações, use os seguintes:
-    PRIMEIRA INSTÂNCIA:
-        - MANIFESTAÇÃO: "manifestar sobre", "falar sobre", "pronunciar-se"
-        - SENTENÇA: "sentença proferida", "prolação de sentença"
-        - DESPACHO: "despacho proferido", "determino que"
-        - DECISÃO: "decisão proferida", "decido:"
-        - AUDIÊNCIA: "designada audiência", "marcada audiência"
-        - PERICIA: "perícia designada", "exame pericial"
-        - SENTENÇA_AOS_EMBARGOS: "sentença aos embargos", "julgamento dos embargos"
-        - EMBARGOS DE DECLARAÇÃO: "opor embargos", "embargos declaratórios"
-        - APRESENTAÇÃO DE QUESITOS: "apresentar quesitos", "indicar quesitos"
-        - CONTESTAÇÃO: "apresentar contestação", "prazo para contestar"
-        - IMPUGNAÇÃO: "impugnar", "apresentar impugnação"
-        - CONTRARAZÕES: "apresentar contrarrazões", "oferecer contrarrazões"
+DESPACHO
+Vistos, etc.
 
-    SEGUNDA INSTÂNCIA:
-        - INOMINADO: "recurso inominado", "interpor recurso"
-        - RECURSO ORDINÁRIO: "recurso ordinário", "RO"
-        - APELAÇÃO: "apelação", "apelar"
-        - AGRAVO DE INSTRUMENTO: "agravo de instrumento", "AI"
-        - EMBARGOS DE DECLARAÇÃO: "embargos de declaração", "ED"
-        - CONTRARAZÕES: "contrarrazões recursais", "responder ao recurso"
+Intime-se a parte exequente para, querendo, impugnar os cálculos de liquidação apresentados pela parte executada, no prazo de oito dias, sob pena de preclusão, nos termos do §2o, do art. 879 da CLT.
 
-    Ordem de verificação:
-        1. Primeiro verificar termos específicos (ex: "embargos de declaração")
-        2. Depois termos mais genéricos (ex: "manifestar sobre")
+Desde já, inclua-se o feito na pauta de audiências para tentativa de conciliação.
 
-    Considerar o contexto para identificação:
-        - Se mencionar "turma recursal" -> é segunda instância
-        - Se mencionar "vara" -> é primeira instância
+Designo audiência virtual para tentativa de conciliação no dia 16/06/2025 às 10:15 horas.
 
+Intimem-se as partes.
 
-
-4. Para o campo "status_sistema", use um dos seguintes formatos:
-    - "Prazo para [tipo_manifestacao] em curso"
-    - "Aguardando [tipo_manifestacao]"
-    - "Pendente de [tipo_manifestacao]"
-
-5. No campo "advogado_destinatario":
-   - vamos ignorar termos como "Dr.", "OAB".
-
-6. Para identificar a instância, procure menções à:
- IMPORTANTE: Verificar PRIMEIRO os indicadores de SEGUNDA instância. Se encontrar qualquer um deles, classificar como SEGUNDA independente de outros indicadores.
- 
-    - Segunda instância:
-        - "turma"
-        - "relator"
-        - "Des."
-        - "Des(a)"
-        - "Des(a)."
-        - "Des."
-        - "Desemb."
-        - "Desembargador"
-        - "acórdão"
-        - "tribunal"
-        - "agravo"
-        - "agravante"
-        - "agravado"
-        - "RITJMG"
-        - "julgamento virtual"
-        - "sessão de julgamento"
-
-    - Primeira instância:
-        - "vara"
-        - "juiz de primeiro grau"
-        - "juízo de origem"
-        - "juiz"
-        - "sentença"
-
-    Observações importantes:
-    - Termos como "agravo", "agravante", "agravado" sempre indicam SEGUNDA instância
-    - A presença de "Des." ou "Des(a)." sempre indica SEGUNDA instância
-    - Se não houver indicadores claros, retorne "não informado"
-
-7. Para identificar categoria processual, procure (na ordem):
-    - JUIZADO (verificar primeiro):
-        - "juizado especial"
-        - "Lei 9.099/95"
-        - "juizado especial cível"
-        - "juizado especial da fazenda"
-        - "procedimento do juizado"
-        - "JEC"
-        - "JECRIM"
-        - "JEFAZ"
-        - "turma recursal"
-        - "unidade jurisdicional"
-        - "JD" (quando vier após número, ex: "4º JD")
-    - CRIMINAL (verificar segundo):
-        - "vara criminal"
-        - "ação penal"
-        - "processo crime"
-        - "denunciado"
-    - TRABALHO (verificar terceiro):
-        - "vara do trabalho"
-        - "reclamação trabalhista"
-        - "TRT"
-        - "reclamada"
-        - "reclamante"
-    - CIVIL (verificar por último):
-        - "vara cível"
-        - "ação civil"
-        - "processo civil"
-        - "[CÍVEL]" (apenas se nenhuma das categorias anteriores for identificada)
-
-    Observações importantes:
-    - A ordem de verificação é importante: JUIZADO > CRIMINAL > TRABALHO > CIVIL
-    - Se encontrar qualquer indicador de JUIZADO, deve classificar como JUIZADO mesmo que encontre [CÍVEL]
-    - A presença de "Turma Recursal" sempre indica JUIZADO
-    - A presença de "unidade jurisdicional" ou "JD" sempre indica JUIZADO
-
-8. Para identificar embargos de declaração, procure menções a:
-   - "embargos de declaração"
-   - "opor embargos"
-   - "oposição de embargos declaratórios"
-   - "embargos declaratórios"
-   - "prazo para embargos"
-   - "intimação dos embargos"
-   - "manifestar sobre os embargos"
-   - "contrarrazões aos embargos"
-   
-    Se identificar embargos de declaração:
-    - tipo_manifestacao deve ser "EMBARGOS DE DECLARAÇÃO"
-    - base_legal_prazo deve mencionar a regra específica dos embargos
-
-OBSERVAÇÕES GERAIS: 
-   - Considere variações semânticas e sinônimos das expressões-alvo, como "apresentar contrarrazões", "manifeste-se sobre o recurso", etc.
-   - Se o dado não estiver presente no texto, retorne "não informado" ou null, sem tentar inferir.
-
-9. Para classificar a acao_recomendada:
-
-    COMPARECER:
-    IMPORTANTE: Se houver 'data_comparecimento' e 'horario_comparecimento' válidos (data/hora em formato correto e não nulos), a ação recomendada é obrigatoriamente 'COMPARECER'. Se NÃO houver 'data_comparecimento' e 'horario_comparecimento' válidos, a ação recomendada deve ser 'TOMAR_CIENCIA' ou 'MANIFESTAR_SE', dependendo dos outros campos.
-    - Quando houver qualquer tipo de comparecimento válido ("AUDIENCIA" | "PERICIA" | "PAUTA_DE_JULGAMENTO") com data e hora válidos. Identificado por termos como:
-        • "comparecer à"
-        • "designada audiência"
-        • "perícia designada"
-        • "sessão de julgamento"
-        (ver regras detalhadas de tipo_comparecimento no item 10)
-
-    MANIFESTAR_SE:
-    IMPORTANTE: Se houver "prazo" válido (int e não nulo), e o prazo for de manifestação então, a ação recomendada é obrigatoriamente 'MANIFESTAR_SE'. Se não houver prazo válido, a acao_recomendada jamais será 'MANIFESTAR_SE'
-    - Identificaremos 'MANIFESTAR_SE' quando houver prazo para manifestação ou qualquer tipo de resposta necessária. Identificado por termos como:
-        • "prazo para manifestar"
-        • "prazo para contestar"
-        • "prazo para recorrer"
-        • "prazo para impugnar"
-        • "prazo para responder"
-
-    TOMAR_CIENCIA:
-    IMPORTANTE: Se não houver 'prazo', 'data_comparecimento' e 'horario_comparecimento' válidos (formato correto e não nulos) então obrigatoriamente a acao_recomendada será 'TOMAR_CIENCIA'
-    - Quando for apenas uma comunicação sem necessidade de manifestação ou comparecimento. Identificado por termos como:
-        • "Autos distribuídos e conclusos"
-        • "autos e conclusos"
-        • "para ciência"
-        • "dou ciência às partes"
-        • "ficam as partes intimadas"
-        • "publique-se"
-        • "ciente"
-        • Decisões/despachos sem determinação específica
-        • Atos meramente informativos
-
-    Observações importantes:
-    - Se classificado como COMPARECER, o campo 'tipo_comparecimento' DEVE ser preenchido
-    - Se classificado como MANIFESTAR_SE, o campo 'prazo' DEVE ser preenchido
-    - Se classificado como TOMAR_CIENCIA, não é necessário preencher 'prazo' nem 'tipo_comparecimento'
-
-10. Para identificar tipo_comparecimento:
-    IMPORTANTE: Se mencionar audiência, perícia, ou pauta de julgamento, preencher o tipo_comparecimento apenas se data e hora explícitas forem fornecidas. Caso contrário, deixar como null.
-
-    - "AUDIENCIA":
-        - **"designada audiência"**
-        - **"audiência marcada"**
-        - **"comparecer à audiência"**
-        - "assembleia geral de credores"
-        - "convocação de credores"
-        - "primeira convocação"
-        - "segunda convocação"
-        - **"sessão de julgamento"**
-        - "incluído em pauta"
-        - "reincluído em pauta"
-        - "sessão será realizada"
-        - "sessão ordinária"
-        - "sessão extraordinária"
-    - "PERICIA":
-        - "perícia designada"
-        - "exame pericial"
-        - "comparecer à perícia"
-    - "PAUTA_DE_JULGAMENTO":
-        - "incluído na sessão de julgamento"
-        - "inclusão em pauta"
-        - "autos incluídos na pauta"
-        - "designado o feito para julgamento"
-        - "pauta de julgamento"
-        - "sessão será realizada"
-        - "julgamento virtual"
-        - "sessão de julgamento VIRTUAL"
-        - "sessão de julgamento presencial"
-        - "sessão por videoconferência"
-
-    Observações importantes:
-    - Sessões de julgamento, pautas de julgamento e inclusão em pauta devem ser consideradas como **"PAUTA_DE_JULGAMENTO"**.
-    - Se houver menção a "Plenário", "Tribunal", "sustentação oral" ou "julgamento virtual" junto com data/horario, considerar como **"PAUTA_DE_JULGAMENTO"**.
-    - "Audiências designadas" com data e hora específicas devem ser consideradas como "AUDIENCIA", não como "PAUTA_DE_JULGAMENTO".
-    - NÃO considerar como comparecimento quando:
-        - "aguarde-se a audiência já designada"
-        - "mantida a audiência designada"
-        - "mantidas as cominações"
-        - "audiência anteriormente designada"
-        - Referências a audiências já marcadas sem nova designação.
-
-    Para extrair data/horario, procurar por padrões como:
-        - "sessão de julgamento do dia DD/MM/YYYY, às HH:MM"
-        - "pauta de julgamento de DD/MM/YYYY, às HH:MM"
-        - "pauta virtual de DD/MM/YYYY"
-        - "sessão será realizada ... em DD/MM/YYYY, às HH:MM"
-        - "dia DD.MM.YYYY, às HHhMMmin"
-        - "DD.MM.YYYY, às HHhMMmin"    
-        - "DD/MM/YYYY, às HHhMMmin"
-        - "DD.MM.YYYY às HHhMMmin"
-        - "DD/MM/YYYY às HHhMMmin"
-
-    Observações importantes sobre datas e horários:
-    - Aceitar datas nos formatos:
-        • DD/MM/YYYY
-        • DD.MM.YYYY
-    - Aceitar horários nos formatos:
-        • HH:MM
-        • HHhMMmin
-        • HH:MM horas
-        • HHhMM
-    - Converter sempre para o formato padrão:
-        • Data: YYYY-MM-DD
-        • Hora: HH:MM
-
-
-TEXTO-INTIMAÇÃO: [TEXTO_INTIMACAO]`;
+MONTES CLAROS/MG, 02 de junho de 2025.
+SERGIO SILVEIRA MOURAO
+Juiz do Trabalho Substituto`;
 
