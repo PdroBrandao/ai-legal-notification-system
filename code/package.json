@@ -1,0 +1,74 @@
+{
+  "name": "adv",
+  "version": "1.0.0",
+  "description": "Sistema automatizado para consulta e extração de intimações do PJE (Processo Judicial Eletrônico) via DJEN.",
+  "main": "dist/index.js",
+  "scripts": {
+    "start:local": "ts-node src/index.ts",
+    "start:offline": "npm run build && serverless offline",
+    "start:deploy": "npm run build && serverless deploy",
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "prisma:seed": "ts-node -r tsconfig-paths/register prisma/seed.ts",
+    "prisma:generate": "npx prisma generate --schema prisma/schema.prisma",
+    "prisma:push": "npx prisma db push --schema prisma/schema.prisma",
+    "prisma:migrate": "npx prisma migrate dev --schema prisma/schema.prisma",
+    "prisma:deploy": "npx prisma migrate deploy --schema prisma/schema.prisma",
+    "deploy:clean": "npm run clean && npm run start:deploy",
+    "deploy:force": "npm run clean && npm run prisma:generate && serverless deploy --force",
+    "update:lambda": "serverless deploy function --function processIntimacoes",
+    "update:lambda:force": "npm run clean && npm run build && npm run prisma:generate && serverless deploy function --function processIntimacoes",
+    "deploy:api": "npm run clean && npm run build && npm run prisma:generate && serverless deploy",
+    "deploy:api:force": "serverless deploy --force",
+    "dev": "ts-node -r tsconfig-paths/register src/index.ts",
+    "api:dev": "ts-node src/api-server.ts",
+    "prazo": "ts-node src/tools/prazo-calculator.ts",
+    "prompt": "ts-node src/tools/prompt-tester.ts",
+    "test": "ts-node src/tools/prompt-regression-tester.ts",
+    "test:full-regression": "ts-node src/tools/prompt-regression-tester.ts --all-categories"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PdroBrandao/adv.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PdroBrandao/adv/issues"
+  },
+  "homepage": "https://github.com/PdroBrandao/adv#readme",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "googleapis": "^148.0.0",
+    "serverless-http": "^3.2.0",
+    "tsconfig-paths": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/google-spreadsheet": "^4.0.0",
+    "@types/node": "^20.17.43",
+    "copy-webpack-plugin": "^13.0.0",
+    "prisma": "^5.22.0",
+    "rimraf": "^5.0.10",
+    "serverless": "^4.14.3",
+    "serverless-esbuild": "^1.55.0",
+    "serverless-offline": "^14.4.0",
+    "serverless-webpack": "^5.15.1",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.7",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "keywords": [],
+  "types": "./dist/index.d.ts"
+}

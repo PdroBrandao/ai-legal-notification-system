@@ -1,0 +1,305 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+// ENUMs para Status e Tipos
+enum StatusExecucao {
+  INICIADO
+  SUCESSO
+  ERRO
+  PARCIAL
+}
+
+enum StatusIntimacao {
+  PENDENTE
+  PROCESSADO
+  NOTIFICADO
+  ERRO
+}
+
+enum StatusNotificacao {
+  PENDENTE
+  ENVIADO
+  ERRO
+  CANCELADO
+}
+
+enum TipoNotificacao {
+  WHATSAPP
+  EMAIL
+  GOOGLE_CALENDAR
+}
+
+enum Ambiente {
+  PROD
+  HML
+  DEV
+}
+
+enum Plano {
+  TRIAL
+  BASIC
+  PRO
+  ENTERPRISE
+}
+
+enum CategoriaProcessual {
+  CIVIL
+  JUIZADO
+  CRIMINAL
+  TRABALHO
+}
+
+enum Instancia {
+  PRIMEIRA
+  SEGUNDA
+}
+
+enum TipoComparecimento {
+  AUDIENCIA
+  PERICIA
+  PAUTA_DE_JULGAMENTO
+}
+
+enum Tribunal {
+  TJMG
+  TRT3
+  TRF6
+}
+
+// Modelo para Usuários (escritórios/empresas)
+model Escritorio {
+  id            String    @id @default(uuid())
+  nome          String
+  email         String    @unique
+  ativo         Boolean   @default(true)
+  plano         Plano     @default(TRIAL)
+  firstEntry    Boolean   @default(true)
+  dataExpiracao DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  advogados     Advogado[] 
+}
+
+// Modelo para Advogados
+model Advogado {
+  id                 String    @id @default(uuid())
+  escritorioId       String    // Renomeado de userId
+  nome               String
+  oab                String    @unique
+  telefone           String
+  email              String    @unique
+  whatsappVerificado Boolean   @default(false)
+  ultimaConsulta     DateTime?
+  ativo              Boolean   @default(true)
+  magicLinkToken     String?
+  magicLinkExpiry    DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  googleCalendarId   String?   
+  googleAuth         GoogleAuth?
+
+  escritorio         Escritorio  @relation(fields: [escritorioId], references: [id]) // Renomeado de user
+  intimacoes         Intimacao[]
+  processos          Processo[]
+  consultas          ConsultaLog[]
+}
+
+// Modelo para Processos
+model Processo {
+  id              String   @id @default(uuid())
+  numeroProcesso  String   @unique
+  numeroFormatado String?  // Adicionado: número com máscara para melhor visualização
+  vara            String
+  nomeOrgao       String   // Adicionado: nome completo do órgão
+  tribunal        Tribunal  // Alterado de String para Tribunal
+  status          String
+  classeProcessual String        // mantém o nome completo
+  categoria       CategoriaProcessual  // nova coluna para categorização
+  autor           String
+  reu             String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  instancia       Instancia
+
+  intimacoes Intimacao[]
+  advogados  Advogado[]
+}
+
+// Modelo para Intimações
+model Intimacao {
+  id                String   @id @default(uuid())
+  processoId        String
+  advogadoId        String
+  numeroComunicacao Int      // Adicionado: ID único da comunicação DGEN
+  hash              String   // Adicionado: controle de duplicidade
+  dataPublicacao    DateTime
+  dataInicioPrazo   DateTime
+  prazo             Int
+  dataLimite        DateTime?
+  conteudo          String   @db.Text
+  resumoIA          String?  @db.Text
+  tipoManifestacao  String?
+  tipoDocumento     String?  // Adicionado: tipo do documento (complementa tipo_ato)
+  textoManifestacao String?  @db.Text
+  baseLegalPrazo    String?
+  meio              String   // Adicionado: meio de comunicação
+  meiocompleto      String   // Adicionado: descrição completa do meio
+  link              String?  // Adicionado: link para o documento
+  idDgen    String
+  status            StatusIntimacao
+  googleEventId     String?  @unique
+  googleEventStatus String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Novos campos necessários
+  isJuizado            Boolean   @default(false)
+  isRecursoInominado   Boolean   @default(false)
+  isContrarazoesInominado Boolean @default(false)
+  regraAplicada        String 
+
+  processo     Processo      @relation(fields: [processoId], references: [id])
+  advogado     Advogado     @relation(fields: [advogadoId], references: [id])
+  notificacoes Notificacao[]
+  analisesIA   AnaliseIALog[]
+
+  // Novos campos para complementar a análise
+  consequenciasPraticas String?  @db.Text
+  acoesSugeridas       String[]  // Array de strings para as ações
+  statusSistema        String?
+
+  @@index([idDgen])
+  @@index([hash])
+  @@index([numeroComunicacao])
+  @@index([idDgen, advogadoId])
+
+  tipoComparecimento TipoComparecimento?
+  dataComparecimento DateTime?
+  horarioComparecimento String?
+}
+
+// Modelo para Notificações
+model Notificacao {
+  id          String            @id @default(uuid())
+  intimacaoId String
+  tipo        TipoNotificacao
+  status      StatusNotificacao
+  dataEnvio   DateTime?
+  tentativas  Int              @default(0)
+  erro        String?          @db.Text
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  intimacao   Intimacao        @relation(fields: [intimacaoId], references: [id])
+}
+
+// Modelo para Autenticação Google
+model GoogleAuth {
+  id           String   @id @default(uuid())
+  advogadoId   String   @unique
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+  scope        String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  advogado Advogado @relation(fields: [advogadoId], references: [id])
+}
+
+// Modelo para Logs de Execução
+model ExecucaoLog {
+  id              String   @id @default(uuid())
+  dataExecucao    DateTime @default(now())
+  status          StatusExecucao
+  
+  // Métricas detalhadas
+  qtdRequisicoes   Int     @default(0)
+  qtdSucesso       Int     @default(0)
+  qtdFalhas        Int     @default(0)
+  tempoExecucao    Int     @default(0)  // ms
+  memoriaUtilizada Int?    // MB
+  
+  // Detalhes técnicos
+  erro            String?  @db.Text
+  stackTrace      String?  @db.Text
+  versaoApi       String?  // Versão da API DJEN
+  ambiente        Ambiente        @default(PROD)
+  
+  // Metadados
+  advogado        String
+  dataConsulta    DateTime
+
+  // Relações
+  consultas       ConsultaLog[]
+}
+
+model ConsultaLog {
+  id               String   @id @default(uuid())
+  advogadoId       String
+  dataConsulta     DateTime @default(now())
+  status           String   // SUCESSO, ERRO, RETENTATIVA
+  tribunal         String
+  parametrosBusca  String   @db.Text  // JSON com filtros aplicados
+  qtdResultados    Int
+  tempoRespostaMs  Int
+  
+  // Novos campos para monitoramento
+  httpStatus       Int?     // Código HTTP da resposta
+  requestId        String?  // ID da requisição
+  requestHeaders   String?  @db.Text
+  
+  // Campos de erro
+  erro             String?  @db.Text
+  stackTrace       String?  @db.Text
+  
+  // Relações
+  consultaOrigemId String?  
+  advogado        Advogado    @relation(fields: [advogadoId], references: [id])
+  consultaOrigem   ConsultaLog? @relation("RetryRelation", fields: [consultaOrigemId], references: [id])
+  retentativas    ConsultaLog[] @relation("RetryRelation")
+  execucaoLogId   String?
+  execucaoLog     ExecucaoLog? @relation(fields: [execucaoLogId], references: [id])
+}
+
+// Modelo para Feriados
+model Feriado {
+  id            String   @id @default(uuid())
+  siglaTribunal String
+  data          DateTime
+
+  @@unique([siglaTribunal, data])
+}
+
+model AnaliseIALog {
+  id          String   @id @default(uuid())
+  intimacaoId String
+  prompt      String   @db.Text
+  resposta    String   @db.Text
+  modeloIA    String   // "gpt-3.5-turbo"
+  temperatura Float    // 0
+  tempoRespostaMs Int
+  
+  // Métricas de uso da API
+  promptTokens    Int
+  completionTokens Int
+  totalTokens     Int
+  custoEstimado   Float?    // opcional, se quiser calcular o custo
+
+  sucesso     Boolean  @default(true)
+  erro        String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  intimacao   Intimacao @relation(fields: [intimacaoId], references: [id])
+
+  @@index([intimacaoId])
+}

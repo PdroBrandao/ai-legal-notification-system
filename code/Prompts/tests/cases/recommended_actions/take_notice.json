@@ -1,0 +1,36 @@
+{
+    "casos": [
+    {  
+      "descricao": "TOMAR_CIENCIA || AUDIENCIA [FALSO_POSITIVO] - Nenhuma menção a audiência",
+      "texto_intimacao": "Processo 0010930-90.2025.5.03.0067 distribuído para 1ª Vara do Trabalho de Montes Claros na data 27/05/2025 <br> Para maiores informações, clique no link a seguir:  <a target=_blank href=https://pje.trt3.jus.br/pjekz/visualizacao/25052800301045600000218568321?instancia=1>https://pje.trt3.jus.br/pjekz/visualizacao/25052800301045600000218568321?instancia=1</a>",
+      "resultado_esperado": {
+        "tipo_comparecimento": null,
+        "data_comparecimento": null,
+        "horario_comparecimento": null,
+        "prazo": null
+      }
+    },
+    {  
+      "descricao": "TOMAR_CIENCIA || AUDIENCIA [FALSO_POSITIVO] - marcou a audiencia, mas o texto fez referencia a 'aguarde-se audiencia já designada'. Na pratica = o advogado ja recebeu a notificação da data da audiencia, e vai esperar",
+      "texto_intimacao": "PODER JUDICIÁRIO  JUSTIÇA DO TRABALHO  TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO  2ª VARA DO TRABALHO DE MONTES CLAROS   0010596-54.2025.5.03.0100  : MATTHAUS LEON ALVES FERREIRA  : POSTO VARANDA II LTDA  INTIMAÇÃO  Fica V. Sa. intimado para tomar ciência do Despacho ID 2735f43 proferido nos autos.  CONCLUSÃO Nesta data, faço os presentes autos CONCLUSOS ao MM. Juiz.  Montes Claros, 03 de junho de 2025  CASSIA MARIA CARVALHO DOS SANTOS   Servidora  DESPACHO Vistos etc.  Prejudicada a proposta de conciliação, aguarde-se a audiência de instrução já designada, mantidas as cominações na ata de id 3d22963.  Dê-se ciência às partes.  MONTES CLAROS/MG, 03 de junho de 2025.  RACHEL FERREIRA CAZOTTI  Juíza do Trabalho Substituta<br><br>Intimado(s) / Citado(s)<br> - POSTO VARANDA II LTDA<br>",
+      "resultado_esperado": {
+        "tipo_comparecimento": null,
+        "data_comparecimento": null,
+        "horario_comparecimento": null,
+        "prazo": null
+      }
+    },
+    {  
+      "descricao": "TOMAR_CIENCIA || AUDIENCIA [FALSO_POSITIVO] - Não foi designação de audiência",
+      "texto_intimacao": "PODER JUDICIÁRIO DO ESTADO DE MINAS GERAIS Justiça de Primeira Instância Comarca de Belo Horizonte / 2ª Vara Empresarial da Comarca de Belo Horizonte Avenida Raja Gabaglia, 1753, Luxemburgo, Belo Horizonte - MG - CEP: 30380-900 PROCESSO Nº: 5052425-33.2025.8.13.0024 CLASSE: [CÍVEL] IMPUGNAÇÃO DE CRÉDITO (114) ALCIDES SOARES DE OLIVEIRA CPF: 702.860.196-04 COTEMINAS S.A. CPF: 07.663.140/0001-99 Intime-se a parte autora sobre a manifestação da Recuperanda. MICHELLE NICOLLE PEREIRA Belo Horizonte, data da assinatura eletrônica.",
+      "resultado_esperado": {
+        "tipo_comparecimento": null,
+        "data_comparecimento": null,
+        "horario_comparecimento": null,
+        "prazo": null
+      }
+    }
+    ]
+  } 
+  
+  
